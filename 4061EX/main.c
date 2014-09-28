@@ -12,9 +12,19 @@
 //This function will parse makefile input from user or default makeFile. 
 int parse(char * lpszFileName)
 {
+	regex_t whiteSpace ;
+    makeRegex (&whiteSpace, "^[\n\r ]+") ;
+    regex_t command ;
+    makeRegex (&command, "^\t[^\n]*\n"); //if start with /t, extract but not tokenize 
+    regex_t lineComment ;
+    makeRegex (&lineComment, "^#[^\n]*\n"); //match any line comment, first character must be #
 	int nLine=0;
 	char szLine[1024];
 	char * lpszLine;
+	enum MatchType { numMatch, wordMatch, noMatch, bootMatch} matchType ;
+	bool MatchSkip;
+	bool CommandSkip;
+
 	FILE * fp = file_open(lpszFileName);
 
 	if(fp == NULL)
@@ -22,17 +32,27 @@ int parse(char * lpszFileName)
 		return -1;
 	}
 
-	while(file_getline(szLine, fp) != NULL) 
-	{
+	while(file_getline(szLine, fp) != NULL) {
 		nLine++;
-		// this loop will go through the given file, one line at a time
-		// this is where you need to do the work of interpreting
-		// each line of the file to be able to deal with it later
+		MatchSkip=matchRegex(&lineComment, szLine) ; //determine if there is any comment exist, if there is, skip tokenizing and move on 
+		if(MatchSkip==false){
+			CommandSkip=matchRegex(&command, szLine);	//determine if there is tab at the beginning, if not, tokenize the string and break it down 
+			if (CommandSkip==false){
+				//Remove newline character at end if there is one
+				lpszLine = strtok(szLine, " \n"); 
+				while (lpszLine != NULL) {   		
+				printf("%s\n",lpszLine);
+				lpszLine = strtok(NULL, " \n");
+				}
+			}
+			else {
+				printf("%s\n",szLine);
+			}
+		}
+		
+    }
 
-		//Remove newline character at end if there is one
-		lpszLine = strtok(szLine, "\n"); 
-
-		//You need to check below for parsing. 
+		//You need to check below for parsing.
 		//Skip if blank or comment.
 		//Remove leading whitespace.
 		//Skip if whitespace-only.
@@ -41,7 +61,7 @@ int parse(char * lpszFileName)
 		//If lpszLine starts with '\t' it will be command else it will be target.
 		//It is possbile that target may not have a command as you can see from the example on project write-up. (target:all)
 		//You can use any data structure (array, linked list ...) as you want to build a graph
-	}
+	
 
 	//Close the makefile. 
 	fclose(fp);
@@ -63,18 +83,20 @@ void show_error_message(char * lpszFileName)
 int main(int argc, char **argv) 
 {
 	// Declarations for getopt
+	
 	extern int optind;
 	extern char * optarg;
 	int ch;
-	char * format = "f:hnBm:";
+	char * format = "f:hnBm:"; //if there is semicolon after it, you need specify a file
 	
 	// Default makefile name will be Makefile
 	char szMakefile[64] = "Makefile";
 	char szTarget[64];
 	char szLog[64];
+	
 
-	while((ch = getopt(argc, argv, format)) != -1) 
-	{
+	while((ch = getopt(argc, argv, format)) != -1) //obtain the character option 
+	{ //argv would be ./make4061 ..etc 
 		switch(ch) 
 		{
 			case 'f':
@@ -102,6 +124,10 @@ int main(int argc, char **argv)
 	// If getopt is still really confusing,
 	// try printing out what's in argv right here, then just running 
 	// with various command-line arguments.
+	 
+    //for command ./make4061, nothing left, ./make4061 123 left with 123..etc
+	
+	printf("argc is %d \n", argc);
 
 	if(argc > 1)
 	{

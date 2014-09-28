@@ -35,10 +35,31 @@ char* file_getline(char* buffer, FILE* fp)
 	return buffer;
 }
 
+
 //Return -1 if file does not exist
 int is_file_exist(char * lpszFileName)
 {
 	return access(lpszFileName, F_OK); 
+}
+
+char *trimwhitespace(char *str)
+{
+  char *end;
+
+  // Trim leading space
+  while(isspace(*str)) str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && isspace(*end)) end--;
+
+  // Write new null terminator
+  *(end+1) = 0;
+
+  return str;
 }
 
 //return -1 if file does not exist. 
@@ -134,4 +155,84 @@ void freemakeargv(char **argv) {
    if (*argv != NULL)
       free(*argv);
    free(argv);
+}
+//ALL functions in the following are custom-made functions
+
+
+void makeRegex (regex_t *re, const char* pattern) {
+  int rc ;
+
+  /* "Compile" the regular expression.  This sets up the regex to do
+     the matching specified by the regular expression given as a
+     character string.
+   */
+  rc = regcomp(re, pattern, REG_EXTENDED) ;
+
+  if (rc!= 0) {
+      printf ("Error in compiling regular expression.\n");
+      size_t length = regerror (rc, re, NULL, 0) ;
+      char *buffer = (char *) malloc( sizeof(char) * length ) ;
+      (void) regerror (rc, re, buffer, length) ;
+      printf ("%s\n", buffer);
+  }
+}
+
+
+bool matchRegex (regex_t *re, const char *text) {
+    int status ;
+    const int nsub=1 ;
+    regmatch_t matches[nsub] ;
+
+  /* execute the regular expression match against the text.  If it
+     matches, the beginning and ending of the matched text are stored
+     in the first element of the matches array.
+   */
+    status = regexec(re, text, (size_t)nsub, matches, 0); 
+
+    if (status==REG_NOMATCH) {
+        return false ;
+    }
+    else {
+        return true ;
+    }
+}
+
+int consumeWhiteSpaceAndComments (regex_t *whiteSpace, 
+                                  regex_t *blockComment, 
+				  regex_t *lineComment,
+                                  const char *text) {
+    int numMatchedChars = 0 ;
+    int totalNumMatchedChars = 0 ;
+    int stillConsumingWhiteSpace ;
+
+    do {
+        stillConsumingWhiteSpace = 0 ;  // exit loop if not reset by a match
+
+        // Try to match white space
+        numMatchedChars = matchRegex (whiteSpace, text) ;
+        totalNumMatchedChars += numMatchedChars ;
+        if (numMatchedChars > 0) {
+            text = text + numMatchedChars ;
+            stillConsumingWhiteSpace = 1 ;
+        }
+
+        // Try to match block comments
+        numMatchedChars = matchRegex (blockComment, text) ;
+        totalNumMatchedChars += numMatchedChars ;
+        if (numMatchedChars > 0) {
+            text = text + numMatchedChars ;
+            stillConsumingWhiteSpace = 1 ;
+        }
+
+        // Try to match single-line comments
+        numMatchedChars = matchRegex (lineComment, text) ;
+        totalNumMatchedChars += numMatchedChars ;
+        if (numMatchedChars > 0) {
+            text = text + numMatchedChars ;
+            stillConsumingWhiteSpace = 1 ;
+        }
+    }
+    while ( stillConsumingWhiteSpace ) ;    
+
+    return totalNumMatchedChars ;
 }

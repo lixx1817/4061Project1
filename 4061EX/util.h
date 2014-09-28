@@ -9,6 +9,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <regex.h>
+#include <stdbool.h>
 
 // the following ifdef/def pair prevents us from having problems if 
 // we've included util.h in multiple places... it's a handy trick
@@ -28,11 +30,20 @@
 // This stuff is for easy file reading
 FILE * file_open(char*);
 char * file_getline(char*, FILE*);
+char *trimwhitespace(char *str);
 int is_file_exist(char *);
 int get_file_modification_time(char *);
 int compare_modification_time(char *, char *);
 int makeargv(const char *s, const char *delimiters, char ***argvp);
 void freemakeargv(char **argv);
+
+// hand made functions below 
+void makeRegex (regex_t *re, const char* pattern);
+bool matchRegex (regex_t *re, const char *text);
+int consumeWhiteSpaceAndComments (regex_t *whiteSpace, 
+                                  regex_t *blockComment,
+                                  regex_t *lineComment,
+                                  const char *text) ;
 
 //You will need to fill this struct out to make a graph.
 typedef struct target{
