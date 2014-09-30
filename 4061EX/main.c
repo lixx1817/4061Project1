@@ -24,6 +24,7 @@ int parse(char * lpszFileName)
 	char szLine[1024];
 	char * lpszLine="123";
 	enum MatchType { numMatch, wordMatch, noMatch, bootMatch} matchType ;
+	int target_length;
 	bool MatchSkip;
 	bool BlankSkip;
 	bool CommandSkip;
@@ -36,7 +37,6 @@ int parse(char * lpszFileName)
 	}
 
 	while(file_getline(szLine, fp) != NULL) {
-		//printf("beginning is %s\n",lpszLine);
 		nLine++;
 		MatchSkip=matchRegex(&lineComment, szLine) ; //determine if there is any comment exist, if there is, skip tokenizing and move on 
 		BlankSkip=matchRegex(&whiteSpace, szLine) ; 
@@ -45,31 +45,28 @@ int parse(char * lpszFileName)
 			if (CommandSkip==false){ //if not a command
 				//Remove newline character at end if there is one
 				lpszLine = strtok(szLine, " \n"); 
-				printf("lpszLine is %s\n",lpszLine);
-				strcpy(targetTree[nTargets].name,lpszLine);
-				//targetTree[nTargets].name=lpszLine;
-				printf("target name given as %s",targetTree[0].name);
-				while (lpszLine != NULL) {   		
-				//targetTree[nTargets].depedency[nDepedencies]=lpszLine;
-				nDepedencies++;
+				strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
+				printf("target is %s",targetTree[nTargets].name);
 				lpszLine = strtok(NULL, " \n");
+				while (lpszLine != NULL) { 
+				strcpy(targetTree[nTargets].depedency[nDepedencies],lpszLine);
+				lpszLine = strtok(NULL, " \n");
+				//printf("lpszLine is now! %s\n",lpszLine);  		
+				//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
+				nDepedencies++;
 				}
-				//lpszLine now empty
 				
 			}
 			else if (CommandSkip==true) {
-				//printf("%s",szLine);
+				printf("%s",szLine);
 				nTargets++;
-				//printf("it is now %s",targetTree[0].name);
+				nDepedencies=0;
 			}
 		}
-	 printf("it is now! %s\n",targetTree[0].name);
-	 	 printf("it is now! %s\n",targetTree[1].name);
+	 
 
     }
-    //printf("it is %s\n",targetTree[0].name);
-    //printf("abc %s\n",targetTree[1].name);
-    //printf("%s\n",targetTree[2].name);
+    
 
 		//You need to check below for parsing.
 		//Skip if blank or comment.

@@ -48,9 +48,9 @@ int testFn(const char *str);
 //You will need to fill this struct out to make a graph.
 typedef struct target{
 	char name[30]; 
-	char *depedency[30];
-	char* command_line;
-	char* options;
+	char depedency[30][30];
+	char commandline[30]; 
+	char options[30]; 
 	bool nameFilled;
 }target_t;
 
