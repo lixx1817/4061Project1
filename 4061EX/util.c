@@ -236,3 +236,10 @@ int consumeWhiteSpaceAndComments (regex_t *whiteSpace,
 
     return totalNumMatchedChars ;
 }
+
+
+int testFn(const char *str)
+{
+    return (str && *str && str[strlen(str) - 1] == '\n') ? 0 : 1;
+}
+	

@@ -13,16 +13,19 @@
 int parse(char * lpszFileName)
 {
 	regex_t whiteSpace ;
-    makeRegex (&whiteSpace, "^[\n\r ]+") ;
+    makeRegex (&whiteSpace, "^\\s*$") ;
     regex_t command ;
     makeRegex (&command, "^\t[^\n]*\n"); //if start with /t, extract but not tokenize 
     regex_t lineComment ;
     makeRegex (&lineComment, "^#[^\n]*\n"); //match any line comment, first character must be #
 	int nLine=0;
+	int nTargets=0; 
+	int nDepedencies=0;
 	char szLine[1024];
-	char * lpszLine;
+	char * lpszLine="123";
 	enum MatchType { numMatch, wordMatch, noMatch, bootMatch} matchType ;
 	bool MatchSkip;
+	bool BlankSkip;
 	bool CommandSkip;
 
 	FILE * fp = file_open(lpszFileName);
@@ -33,24 +36,40 @@ int parse(char * lpszFileName)
 	}
 
 	while(file_getline(szLine, fp) != NULL) {
+		//printf("beginning is %s\n",lpszLine);
 		nLine++;
 		MatchSkip=matchRegex(&lineComment, szLine) ; //determine if there is any comment exist, if there is, skip tokenizing and move on 
-		if(MatchSkip==false){
+		BlankSkip=matchRegex(&whiteSpace, szLine) ; 
+		if(MatchSkip==false && BlankSkip==false){
 			CommandSkip=matchRegex(&command, szLine);	//determine if there is tab at the beginning, if not, tokenize the string and break it down 
-			if (CommandSkip==false){
+			if (CommandSkip==false){ //if not a command
 				//Remove newline character at end if there is one
 				lpszLine = strtok(szLine, " \n"); 
+				printf("lpszLine is %s\n",lpszLine);
+				strcpy(targetTree[nTargets].name,lpszLine);
+				//targetTree[nTargets].name=lpszLine;
+				printf("target name given as %s",targetTree[0].name);
 				while (lpszLine != NULL) {   		
-				printf("%s\n",lpszLine);
+				//targetTree[nTargets].depedency[nDepedencies]=lpszLine;
+				nDepedencies++;
 				lpszLine = strtok(NULL, " \n");
 				}
+				//lpszLine now empty
+				
 			}
-			else {
-				printf("%s\n",szLine);
+			else if (CommandSkip==true) {
+				//printf("%s",szLine);
+				nTargets++;
+				//printf("it is now %s",targetTree[0].name);
 			}
 		}
-		
+	 printf("it is now! %s\n",targetTree[0].name);
+	 	 printf("it is now! %s\n",targetTree[1].name);
+
     }
+    //printf("it is %s\n",targetTree[0].name);
+    //printf("abc %s\n",targetTree[1].name);
+    //printf("%s\n",targetTree[2].name);
 
 		//You need to check below for parsing.
 		//Skip if blank or comment.

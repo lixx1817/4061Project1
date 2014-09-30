@@ -44,9 +44,17 @@ int consumeWhiteSpaceAndComments (regex_t *whiteSpace,
                                   regex_t *blockComment,
                                   regex_t *lineComment,
                                   const char *text) ;
-
+int testFn(const char *str);
 //You will need to fill this struct out to make a graph.
 typedef struct target{
+	char name[30]; 
+	char *depedency[30];
+	char* command_line;
+	char* options;
+	bool nameFilled;
 }target_t;
+
+target_t targetTree[1024];
+
 
 #endif
