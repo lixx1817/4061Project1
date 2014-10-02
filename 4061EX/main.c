@@ -50,7 +50,7 @@ int parse(char * lpszFileName)
 				lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
 				strcpy(newDepedency->name,lpszLine);
 				targetTree[nTargets].depedency[nDepedencies]=newDepedency;
-				printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
+				//printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
 				lpszLine = strtok(NULL, " \n");
 				//printf("lpszLine is now! %s\n",lpszLine);  		
 				//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
@@ -63,7 +63,7 @@ int parse(char * lpszFileName)
 				if (szLine[0] == '\t') {
 				memmove(szLine, szLine+1, strlen(szLine));}
 				strcpy(targetTree[nTargets].commandline,szLine);
-				printf("%s\n",targetTree[nTargets].commandline);
+				//printf("%s\n",targetTree[nTargets].commandline);
 				nTargets++;
 				nDepedencies=0;
 			}
@@ -72,35 +72,41 @@ int parse(char * lpszFileName)
     }
    
    /*build complete */ 
+   
+   
+   //second iteration, run through the array, give index to each of the depedencies which points to the location of the array//
     int i=0;int j=0; int Dindex; 
     while (targetTree[i].name[0]!='\0'){
 			j=0;
 			if (targetTree[i].depedency[0]!=NULL){
 				while(targetTree[i].depedency[j]->name!=NULL){
 					Dindex=Search(targetTree[i].depedency[j]->name, targetTree);
-					printf("index is %d\n",Dindex);
 					if(Dindex==-1){
-						printf("invalid file, compile stop");
-						break;
+						printf("syntax error,found depedency file that doesnt exist, compile stop\n"); //found syntax error 
+						return -1;
 					}
 					else{
 						targetTree[i].depedency[j]->index=Dindex; 
 					}
-					printf("The depedency name is %s",targetTree[i].depedency[j]->name);
+					//printf("targetTree[%d].depedency[%d]: The depedency name is %s \n",i,j,targetTree[i].depedency[j]->name);
+					//printf("targetTree[%d].depedency[%d]: The depedency matches %d in the array \n",i,j,targetTree[i].depedency[j]->index);
 					j++;
 					
 				}
 			}
 			else{ 
 				targetTree[i].indepedent=true; //indicate that it is a leave node 
+				//printf("targetTree[%d]\n",i);
+				//printf("this is a indepedent node\n");
 				}
 				i++;
+				
 	}
 	
-    printf("the number of targets is %d", nTargets);
+    //printf("the number of targets is %d", nTargets);
 
 
-    
+    //second iteration is over//
 
 		//You need to check below for parsing.
 		//Skip if blank or comment.
@@ -177,7 +183,6 @@ int main(int argc, char **argv)
 	 
     //for command ./make4061, nothing left, ./make4061 123 left with 123..etc
 	
-	printf("argc is %d \n", argc);
 
 	if(argc > 1)
 	{
