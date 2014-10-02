@@ -244,10 +244,13 @@ int testFn(const char *str)
 }
 int Search(char * name, target_t *targetTree ){
 	int i=0;
-	while (targetTree[i].name!=NULL){
-		if  (strcmp(targetTree[i].name,name)==1){
+	while (targetTree[i].name[0]!='\0'){
+		printf("first compare %s\n",name);
+		printf("second compare %s\n",targetTree[i].name);
+		if  (strcmp(targetTree[i].name,name)==0){
 			return i;
 		}
+		i++;
 	}
 	return -1;
 }

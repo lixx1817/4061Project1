@@ -71,14 +71,12 @@ int parse(char * lpszFileName)
 	 
     }
    
-    
    /*build complete */ 
     int i=0;int j=0; int Dindex; 
-    while (targetTree[i].name!='\0'){
-			printf("name is %s\n",targetTree[0].name);
+    while (targetTree[i].name[0]!='\0'){
 			j=0;
-			/*if (targetTree[i].depedency[0]!=NULL){
-				while(targetTree[i].depedency[j]!=NULL){
+			if (targetTree[i].depedency[0]!=NULL){
+				while(targetTree[i].depedency[j]->name!=NULL){
 					Dindex=Search(targetTree[i].depedency[j]->name, targetTree);
 					printf("index is %d\n",Dindex);
 					if(Dindex==-1){
@@ -87,13 +85,15 @@ int parse(char * lpszFileName)
 					}
 					else{
 						targetTree[i].depedency[j]->index=Dindex; 
-						j++;
 					}
+					printf("The depedency name is %s",targetTree[i].depedency[j]->name);
+					j++;
+					
 				}
 			}
 			else{ 
 				targetTree[i].indepedent=true; //indicate that it is a leave node 
-				}*/
+				}
 				i++;
 	}
 	
