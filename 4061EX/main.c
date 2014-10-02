@@ -84,7 +84,8 @@ int parse(char * lpszFileName)
    
    //second iteration, run through the array, give index to each of the depedencies which points to the location of the array//
     while (targetTree[i].name[0]!='\0'){
-			j=0;
+			j=0; 
+			targetTree[i].status=INELIGIBLE; //initialize the status as not ready for compile 
 			if (targetTree[i].depedency[0]!=NULL){
 				while(targetTree[i].depedency[j]->name!=NULL){
 					Dindex=Search(targetTree[i].depedency[j]->name, targetTree);
@@ -103,11 +104,15 @@ int parse(char * lpszFileName)
 					j++;
 					
 				}
+				if(targetTree[i].status==INELIGIBLE){
+				printf("%d is Inegilible\n",i+1);}
 			}
 			else{ 
 				targetTree[i].indepedent=true; //indicate that it is a leave node 
 				nDepedentNode++;
 				targetTree[i].status=READY; //indicate that it is a leave node 
+				if(targetTree[i].status==READY){
+				printf("%d is ready\n",i+1);}
 				//printf("targetTree[%d]\n",i);
 				//printf("this is a indepedent node\n");
 				}
@@ -126,25 +131,33 @@ int parse(char * lpszFileName)
     j=0;
     Dindex=0;
     nTargets=0;
+    int checker=0;
     while (targetTree[nTargets].name[0]!='\0'){
+		targetTree[nTargets].allCompleted=true; 
 		nTargets++; //update uTargets to fix the issue of tc 6 
 	}
     //printf("there are %d targets needs to be compile in this file\n",nTargets);
-    while (completedProgress!=nTargets){ //while not all of the progress has been complied
-		if(targetTree[i].indepedent==false){ //if not indepedent node, check its depedency 
-				while(targetTree[i].depedency[j]->name!=NULL){ 
+    while (checker<40){ //while not all of the progress has been complied
+		if(targetTree[i].status==INELIGIBLE){ //if not indepedent node, check its depedency 
+				printf("%d node is Ineligible: \n",i+1);
+				while(targetTree[i].depedency[j]->name!=NULL){
+					printf("%s is the depedency",targetTree[i].depedency[j]->name); 
 					indexChecker=targetTree[i].depedency[j]->index; 
 					if (targetTree[indexChecker].status!=FINISHED){
 						targetTree[i].allCompleted=false;
+						printf("depedency %s is not finished yet\n",targetTree[i].depedency[j]->name);
+						
 					}
 					j++;
-				}        
+				}  
+				j=0;      
 				if (targetTree[i].allCompleted==true){
 					targetTree[i].status=READY;
+					printf("%d node becomes ready \n",i+1);
 				}
 				
 			} 
-		if(targetTree[i].status==READY || targetTree[i].indepedent==true){ //not necessary to be two conditions but I'm being lazy for now 
+		else if(targetTree[i].status==READY ){ //not necessary to be two conditions but I'm being lazy for now 
 			/* do work at here to start compiling shit 
 			 
 			printf("%d node is ready, start compiling",i);
@@ -167,19 +180,18 @@ int parse(char * lpszFileName)
 			*/
 			completedProgress++;
 			targetTree[i].status=FINISHED; //mark it as finished 
-			printf("node %d is executed\n", i);
-				
+			printf("node %d is executed\n", i+1);
 			}
 			
-			
-			
-			
-			 
-			
-			i++;
-			if(targetTree[i].name[0]=='\0'){
+			i++; checker++;
+			/*if(targetTree[i].name[0]=='\0'){
+				printf("reset\n");
+				i=0;
+			}*/
+			if(i==8){
 				i=0;
 			}
+		
 		
 	}
     
