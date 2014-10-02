@@ -38,27 +38,32 @@ int parse(char * lpszFileName)
 
 	while(file_getline(szLine, fp) != NULL) {
 		nLine++;
-		MatchSkip=matchRegex(&lineComment, szLine) ; //determine if there is any comment exist, if there is, skip tokenizing and move on 
+		MatchSkip=matchRegex(&lineComment, szLine) ; 
 		BlankSkip=matchRegex(&whiteSpace, szLine) ; 
 		if(MatchSkip==false && BlankSkip==false){
-			CommandSkip=matchRegex(&command, szLine);	//determine if there is tab at the beginning, if not, tokenize the string and break it down 
-			if (CommandSkip==false){ //if not a command
-				//Remove newline character at end if there is one
+			CommandSkip=matchRegex(&command, szLine);	
+			if (CommandSkip==false){ 
 				lpszLine = strtok(szLine, " \n"); 
 				strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
-				printf("target is %s",targetTree[nTargets].name);
 				lpszLine = strtok(NULL, " \n");
-				while (lpszLine != NULL) { 
-				strcpy(targetTree[nTargets].depedency[nDepedencies],lpszLine);
+				while (lpszLine != NULL) {
+				lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
+				strcpy(newDepedency->name,lpszLine);
+				targetTree[nTargets].depedency[nDepedencies]=newDepedency;
+				printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
 				lpszLine = strtok(NULL, " \n");
 				//printf("lpszLine is now! %s\n",lpszLine);  		
 				//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
 				nDepedencies++;
 				}
 				
+				
 			}
 			else if (CommandSkip==true) {
-				printf("%s",szLine);
+				if (szLine[0] == '\t') {
+				memmove(szLine, szLine+1, strlen(szLine));}
+				strcpy(targetTree[nTargets].commandline,szLine);
+				printf("%s\n",targetTree[nTargets].commandline);
 				nTargets++;
 				nDepedencies=0;
 			}

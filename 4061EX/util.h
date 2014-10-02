@@ -46,12 +46,18 @@ int consumeWhiteSpaceAndComments (regex_t *whiteSpace,
                                   const char *text) ;
 int testFn(const char *str);
 //You will need to fill this struct out to make a graph.
+
+
+typedef struct listNode {
+    char  name[30];
+    int index; 
+} lNode;
 typedef struct target{
-	char name[30]; 
-	char depedency[30][30];
-	char commandline[30]; 
-	char options[30]; 
-	bool nameFilled;
+	char  name[30]; 
+	char  commandline[50]; 
+	char  options[20]; 
+	bool targetExists;
+    lNode * depedency[10];
 }target_t;
 
 target_t targetTree[1024];
