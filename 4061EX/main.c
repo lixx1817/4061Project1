@@ -24,9 +24,16 @@ int parse(char * lpszFileName)
 	char szLine[1024];
 	char * lpszLine="123";
 	int target_length;
+	int nDepedentNode=0;
 	bool MatchSkip;
 	bool BlankSkip;
 	bool CommandSkip;
+	int child_pid;
+	int i=0;
+	int j=0; 
+	int Dindex; 
+	int completedProgress=0; 
+    int indexChecker=0;
 
 	FILE * fp = file_open(lpszFileName);
 
@@ -74,17 +81,19 @@ int parse(char * lpszFileName)
    
    
    //second iteration, run through the array, give index to each of the depedencies which points to the location of the array//
-    int i=0;int j=0; int Dindex; 
     while (targetTree[i].name[0]!='\0'){
 			j=0;
 			if (targetTree[i].depedency[0]!=NULL){
 				while(targetTree[i].depedency[j]->name!=NULL){
 					Dindex=Search(targetTree[i].depedency[j]->name, targetTree);
 					if(Dindex==-1){
-						printf("syntax error,found depedency file that doesnt exist, compile stop\n"); //found syntax error 
-						return -1;
+						if(file_exists(targetTree[i].depedency[j]->name)==false){
+							printf("syntax error,found depedency file that doesnt exist, compile stop\n"); //found syntax error 
+							return -1;
+						}
 					}
 					else{
+						//printf("all syntax correct\n");
 						targetTree[i].depedency[j]->index=Dindex; 
 					}
 					//printf("targetTree[%d].depedency[%d]: The depedency name is %s \n",i,j,targetTree[i].depedency[j]->name);
@@ -95,6 +104,7 @@ int parse(char * lpszFileName)
 			}
 			else{ 
 				targetTree[i].indepedent=true; //indicate that it is a leave node 
+				nDepedentNode++;
 				targetTree[i].status=READY; //indicate that it is a leave node 
 				//printf("targetTree[%d]\n",i);
 				//printf("this is a indepedent node\n");
@@ -113,39 +123,54 @@ int parse(char * lpszFileName)
     i=0;
     j=0;
     Dindex=0;
-    int completedProgress=0; 
-    int indexChecker=0;
-    while (completedProgress!=ntargets){ //while not all of the progress has been complied
-		if(targetTree[i].indepedent=false){ //if not indepedent node, check its depedency 
-				bool allCompleted=true;
+    printf("there are %d targets needs to be compile in this file\n",nTargets);
+    while (completedProgress!=nTargets){ //while not all of the progress has been complied
+		if(targetTree[i].indepedent==false){ //if not indepedent node, check its depedency 
+				printf("this one is not indepedent");
 				while(targetTree[i].depedency[j]->name!=NULL){
 					indexChecker=targetTree[i].depedency[j]->index; 
-					if (targetTree[i].status!=READY){
-						allCompleted=false;
+					if (targetTree[indexChecker].status!=FINISHED){
+						targetTree[i].allCompleted=false;
 					}
 					
 				}
-				if (allCompleted=true){
+				if (targetTree[i].allCompleted==true){
 					targetTree[i].status=READY;
 				}
 				
 			} 
-		if(targetTree[i].status=READY){
+		if(targetTree[i].status==READY || targetTree[i].indepedent==true){ //not necessary to be two conditions but I'm being lazy for now 
+			printf("found one ready one!!!\n"); 
+			/* do work at here to start compiling shit 
+			 
 			printf("%d node is ready, start compiling",i);
 			targetTree[i].status==RUNNING;
 			
-			//do work at here to start compiling shit 
+			 do work at here to start compiling shit 
+			
+			
 			child_pid = fork();
 			if(child_pid == -1){
 				perror("ERROR: Failed to fork\n");
 				return -1;
 			}
-			if (child_pid == 0) { 
+			if (child_pid == 0) {
+				char *Ecommand=targetTree[i].commandline;
+				if (execvp(Ecommand, argv) < 0) {     
+				printf("*** ERROR: exec failed\n");
+				exit(1); 
+				}
+			*/
+			completedProgress++;
+			targetTree[i].status=FINISHED; //mark it as finished 
 				
 			}
-			//
 			
-		}
+			
+			
+			
+			 
+			
 			i++;
 			if(targetTree[i].name[0]=='\0'){
 				i=0;

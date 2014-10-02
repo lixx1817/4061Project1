@@ -18,11 +18,11 @@
 #define _UTIL_H_
 
 //You can change any value in this file as you want. 
-#define INELIGIBLE 0
+/*#define INELIGIBLE 0
 #define READY 1
 #define RUNNING 2
 #define FINISHED 3
-
+*/
 #define MAX_LENGTH 1024
 #define MAX_DEPENDENCIES 10
 #define MAX_TARGETS 10
@@ -60,10 +60,13 @@ typedef struct target{
     lNode * depedency[10];
     bool indepedent; 
     enum STATUS {INELIGIBLE, READY, RUNNING, FINISHED} status ;
+    bool allCompleted; //indicate whether all of its child has completed the process 
 }target_t;
 
 target_t targetTree[1024];
 
 int Search(char * name, target_t *targetTree );
+bool file_exists(const char * filename);
+
 
 #endif

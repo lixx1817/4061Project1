@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
 
 /***************
  * These functions are just some handy file functions.
@@ -253,4 +256,14 @@ int Search(char * name, target_t *targetTree ){
 		i++;
 	}
 	return -1;
+}
+bool file_exists(const char * filename)
+{
+	FILE * file;
+    if (file = fopen(filename, "r"))
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
 }
