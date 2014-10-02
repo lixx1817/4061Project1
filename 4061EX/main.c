@@ -46,6 +46,8 @@ int parse(char * lpszFileName)
 		nLine++;
 		MatchSkip=matchRegex(&lineComment, szLine) ; 
 		BlankSkip=matchRegex(&whiteSpace, szLine) ; 
+		//printf("%s\n", BlankSkip ? "true" : "false");
+		//printf("line number is %d\n",nLine); //determine where blankline is 
 		if(MatchSkip==false && BlankSkip==false){
 			CommandSkip=matchRegex(&command, szLine);	
 			if (CommandSkip==false){ 
@@ -53,14 +55,14 @@ int parse(char * lpszFileName)
 				strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 				lpszLine = strtok(NULL, " \n");
 				while (lpszLine != NULL) {
-				lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
-				strcpy(newDepedency->name,lpszLine);
-				targetTree[nTargets].depedency[nDepedencies]=newDepedency;
-				//printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
-				lpszLine = strtok(NULL, " \n");
-				//printf("lpszLine is now! %s\n",lpszLine);  		
-				//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
-				nDepedencies++;
+					lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
+					strcpy(newDepedency->name,lpszLine);
+					targetTree[nTargets].depedency[nDepedencies]=newDepedency;
+					printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
+					lpszLine = strtok(NULL, " \n");
+					//printf("lpszLine is now! %s\n",lpszLine);  		
+					//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
+					nDepedencies++;
 				}
 				
 				
@@ -113,7 +115,7 @@ int parse(char * lpszFileName)
 				
 	}
 	
-    //printf("the number of targets is %d", nTargets);
+
 
 
     //second iteration is over//
@@ -126,21 +128,19 @@ int parse(char * lpszFileName)
     printf("there are %d targets needs to be compile in this file\n",nTargets);
     while (completedProgress!=nTargets){ //while not all of the progress has been complied
 		if(targetTree[i].indepedent==false){ //if not indepedent node, check its depedency 
-				printf("this one is not indepedent");
-				while(targetTree[i].depedency[j]->name!=NULL){
+				while(targetTree[i].depedency[j]->name!=NULL){ 
 					indexChecker=targetTree[i].depedency[j]->index; 
 					if (targetTree[indexChecker].status!=FINISHED){
 						targetTree[i].allCompleted=false;
 					}
-					
-				}
+					j++;
+				}        
 				if (targetTree[i].allCompleted==true){
 					targetTree[i].status=READY;
 				}
 				
 			} 
 		if(targetTree[i].status==READY || targetTree[i].indepedent==true){ //not necessary to be two conditions but I'm being lazy for now 
-			printf("found one ready one!!!\n"); 
 			/* do work at here to start compiling shit 
 			 
 			printf("%d node is ready, start compiling",i);
@@ -163,6 +163,7 @@ int parse(char * lpszFileName)
 			*/
 			completedProgress++;
 			targetTree[i].status=FINISHED; //mark it as finished 
+			printf("node %d is executed\n", i);
 				
 			}
 			
