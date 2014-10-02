@@ -242,4 +242,12 @@ int testFn(const char *str)
 {
     return (str && *str && str[strlen(str) - 1] == '\n') ? 0 : 1;
 }
-	
+int Search(char * name, target_t *targetTree ){
+	int i=0;
+	while (targetTree[i].name!=NULL){
+		if  (strcmp(targetTree[i].name,name)==1){
+			return i;
+		}
+	}
+	return -1;
+}

@@ -58,9 +58,11 @@ typedef struct target{
 	char  options[20]; 
 	bool targetExists;
     lNode * depedency[10];
+    bool indepedent; 
 }target_t;
 
 target_t targetTree[1024];
 
+int Search(char * name, target_t *targetTree );
 
 #endif
