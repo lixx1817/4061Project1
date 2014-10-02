@@ -59,6 +59,7 @@ typedef struct target{
 	bool targetExists;
     lNode * depedency[10];
     bool indepedent; 
+    enum STATUS {INELIGIBLE, READY, RUNNING, FINISHED} status ;
 }target_t;
 
 target_t targetTree[1024];

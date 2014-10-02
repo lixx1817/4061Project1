@@ -23,7 +23,6 @@ int parse(char * lpszFileName)
 	int nDepedencies=0;
 	char szLine[1024];
 	char * lpszLine="123";
-	enum MatchType { numMatch, wordMatch, noMatch, bootMatch} matchType ;
 	int target_length;
 	bool MatchSkip;
 	bool BlankSkip;
@@ -96,6 +95,7 @@ int parse(char * lpszFileName)
 			}
 			else{ 
 				targetTree[i].indepedent=true; //indicate that it is a leave node 
+				targetTree[i].status=READY; //indicate that it is a leave node 
 				//printf("targetTree[%d]\n",i);
 				//printf("this is a indepedent node\n");
 				}
@@ -107,6 +107,60 @@ int parse(char * lpszFileName)
 
 
     //second iteration is over//
+    
+    
+    //third iteration begins, start running files//
+    i=0;
+    j=0;
+    Dindex=0;
+    int completedProgress=0; 
+    int indexChecker=0;
+    while (completedProgress!=ntargets){ //while not all of the progress has been complied
+		if(targetTree[i].indepedent=false){ //if not indepedent node, check its depedency 
+				bool allCompleted=true;
+				while(targetTree[i].depedency[j]->name!=NULL){
+					indexChecker=targetTree[i].depedency[j]->index; 
+					if (targetTree[i].status!=READY){
+						allCompleted=false;
+					}
+					
+				}
+				if (allCompleted=true){
+					targetTree[i].status=READY;
+				}
+				
+			} 
+		if(targetTree[i].status=READY){
+			printf("%d node is ready, start compiling",i);
+			targetTree[i].status==RUNNING;
+			
+			//do work at here to start compiling shit 
+			child_pid = fork();
+			if(child_pid == -1){
+				perror("ERROR: Failed to fork\n");
+				return -1;
+			}
+			if (child_pid == 0) { 
+				
+			}
+			//
+			
+		}
+			i++;
+			if(targetTree[i].name[0]=='\0'){
+				i=0;
+			}
+		
+	}
+    
+    
+    
+    
+    
+    
+    
+    
+    //
 
 		//You need to check below for parsing.
 		//Skip if blank or comment.
