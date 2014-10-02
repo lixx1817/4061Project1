@@ -49,32 +49,32 @@ int parse(char * lpszFileName)
 		//printf("%s\n", BlankSkip ? "true" : "false");
 		//printf("line number is %d\n",nLine); //determine where blankline is 
 		if(MatchSkip==false && BlankSkip==false){
-			CommandSkip=matchRegex(&command, szLine);	
-			if (CommandSkip==false){ 
-				lpszLine = strtok(szLine, " \n"); 
-				strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
-				lpszLine = strtok(NULL, " \n");
-				while (lpszLine != NULL) {
-					lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
-					strcpy(newDepedency->name,lpszLine);
-					targetTree[nTargets].depedency[nDepedencies]=newDepedency;
-					printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
+				CommandSkip=matchRegex(&command, szLine);	
+				if (CommandSkip==false){ 
+					lpszLine = strtok(szLine, " \n"); 
+					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 					lpszLine = strtok(NULL, " \n");
-					//printf("lpszLine is now! %s\n",lpszLine);  		
-					//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
-					nDepedencies++;
+					while (lpszLine != NULL) {
+						lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
+						strcpy(newDepedency->name,lpszLine);
+						targetTree[nTargets].depedency[nDepedencies]=newDepedency;
+						printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
+						lpszLine = strtok(NULL, " \n");
+						//printf("lpszLine is now! %s\n",lpszLine);  		
+						//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
+						nDepedencies++;
+					}
+					targetTree[nTargets].depedency_filled=true;
 				}
-				
-				
-			}
-			else if (CommandSkip==true) {
-				if (szLine[0] == '\t') {
-				memmove(szLine, szLine+1, strlen(szLine));}
-				strcpy(targetTree[nTargets].commandline,szLine);
-				//printf("%s\n",targetTree[nTargets].commandline);
-				nTargets++;
-				nDepedencies=0;
-			}
+				else if (CommandSkip==true) {
+					
+					if (szLine[0] == '\t') {
+					memmove(szLine, szLine+1, strlen(szLine));}
+					strcpy(targetTree[nTargets].commandline,szLine);
+					//printf("%s\n",targetTree[nTargets].commandline);
+					nTargets++;
+					nDepedencies=0;
+				}
 		}
 	 
     }
@@ -125,7 +125,11 @@ int parse(char * lpszFileName)
     i=0;
     j=0;
     Dindex=0;
-    printf("there are %d targets needs to be compile in this file\n",nTargets);
+    nTargets=0;
+    while (targetTree[nTargets].name[0]!='\0'){
+		nTargets++; //update uTargets to fix the issue of tc 6 
+	}
+    //printf("there are %d targets needs to be compile in this file\n",nTargets);
     while (completedProgress!=nTargets){ //while not all of the progress has been complied
 		if(targetTree[i].indepedent==false){ //if not indepedent node, check its depedency 
 				while(targetTree[i].depedency[j]->name!=NULL){ 
