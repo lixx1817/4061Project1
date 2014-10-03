@@ -34,6 +34,7 @@ int parse(char * lpszFileName)
 	int Dindex; 
 	int completedProgress=0; 
     int indexChecker=0;
+    bool nameTaken=false;
 
 	FILE * fp = file_open(lpszFileName);
 
@@ -49,16 +50,23 @@ int parse(char * lpszFileName)
 		//printf("%s\n", BlankSkip ? "true" : "false");
 		//printf("line number is %d\n",nLine); //determine where blankline is 
 		if(MatchSkip==false && BlankSkip==false){
+				nameTaken=false;
 				CommandSkip=matchRegex(&command, szLine);	
 				if (CommandSkip==false){ 
 					lpszLine = strtok(szLine, " \n"); 
+					if(targetTree[nTargets].name[0]=='\0'){
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
+					}
+					else{nTargets++; nameTaken=true; nDepedencies=0;}
+					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
+					
+					//printf("targetTree[%d] is %s\n",nTargets,targetTree[nTargets].name);  	
 					lpszLine = strtok(NULL, " \n");
 					while (lpszLine != NULL) {
 						lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
 						strcpy(newDepedency->name,lpszLine);
 						targetTree[nTargets].depedency[nDepedencies]=newDepedency;
-						printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
+						//printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
 						lpszLine = strtok(NULL, " \n");
 						//printf("lpszLine is now! %s\n",lpszLine);  		
 						//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
@@ -71,7 +79,8 @@ int parse(char * lpszFileName)
 					memmove(szLine, szLine+1, strlen(szLine));}
 					strcpy(targetTree[nTargets].commandline,szLine);
 					//printf("%s\n",targetTree[nTargets].commandline);
-					nTargets++;
+					if(nameTaken==false){
+					nTargets++;}
 					nDepedencies=0;
 				}
 		}
@@ -100,7 +109,6 @@ int parse(char * lpszFileName)
 						}
 					}
 					else{
-						//printf("all syntax correct\n");
 						targetTree[i].depedency[j]->index=Dindex; 
 					}
 					//printf("targetTree[%d].depedency[%d]: The depedency name is %s \n",i,j,targetTree[i].depedency[j]->name);

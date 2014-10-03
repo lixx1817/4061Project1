@@ -258,8 +258,9 @@ bool file_exists(const char * filename)
 int Search(char * name, target_t *targetTree ){
 	int i=0;
 	while (targetTree[i].name[0]!='\0'){
-		printf("first compare %s\n",name);
-		printf("second compare %s\n",targetTree[i].name);
+		//printf("node is %d\n",i);
+		//printf("first compare %s\n",name);
+		//printf("second compare %s\n",targetTree[i].name);
 		if  (strcmp(targetTree[i].name,name)==0){
 			return i;
 		}
