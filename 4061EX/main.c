@@ -85,13 +85,18 @@ int parse(char * lpszFileName)
     while (targetTree[i].name[0]!='\0'){
 			j=0; 
 			targetTree[i].status=INELIGIBLE; //initialize the status as not ready for compile 
-			if (targetTree[i].depedency[0]!=NULL){
+			if (targetTree[i].depedency[0]!=NULL){  
 				while(targetTree[i].depedency[j]->name!=NULL){
 					Dindex=Search(targetTree[i].depedency[j]->name, targetTree);
 					if(Dindex==-1){
-						if(file_exists(targetTree[i].depedency[j]->name)==false){
+						if(file_exists(targetTree[i].depedency[j]->name)==false){   //if cannot find file in tree, and if these depedencies doesn't exist as file
 							printf("syntax error,found depedency file that doesnt exist, compile stop\n"); //found syntax error 
 							return -1;
+						}
+						else{ //for case such as make4061: main.c parse.c whereas these are existing files 
+							targetTree[i].indepedent=true; //indicate that it is a leave node 
+							nDepedentNode++;
+							targetTree[i].status=READY; //indicate that it is a leave node 
 						}
 					}
 					else{
@@ -130,12 +135,11 @@ int parse(char * lpszFileName)
     j=0;
     Dindex=0;
     nTargets=0;
-    int checker=0;
-    bool go;
+    bool go; //determine whether all node children have completed compiling 
     while (targetTree[nTargets].name[0]!='\0'){
 		nTargets++; //update uTargets to fix the issue of tc 6 
 	}
-    while (checker<60){ //while not all of the progress has been complied
+    while (completedProgress<nTargets){ //while not all of the progress has been complied
 		if(targetTree[i].status==INELIGIBLE){
 				go=true;
 				while(targetTree[i].depedency[j]->name!=NULL){
@@ -177,12 +181,9 @@ int parse(char * lpszFileName)
 			printf("node %d is executed\n", i+1);
 			}
 			
-			i++; checker++;
-			/*if(targetTree[i].name[0]=='\0'){
+			i++; 
+			if(targetTree[i].name[0]=='\0'){
 				printf("reset\n");
-				i=0;
-			}*/
-			if(i==8){
 				i=0;
 			}
 		

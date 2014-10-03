@@ -245,18 +245,6 @@ int testFn(const char *str)
 {
     return (str && *str && str[strlen(str) - 1] == '\n') ? 0 : 1;
 }
-int Search(char * name, target_t *targetTree ){
-	int i=0;
-	while (targetTree[i].name[0]!='\0'){
-		//printf("first compare %s\n",name);
-		//printf("second compare %s\n",targetTree[i].name);
-		if  (strcmp(targetTree[i].name,name)==0){
-			return i;
-		}
-		i++;
-	}
-	return -1;
-}
 bool file_exists(const char * filename)
 {
 	FILE * file;
@@ -267,3 +255,16 @@ bool file_exists(const char * filename)
     }
     return false;
 }
+int Search(char * name, target_t *targetTree ){
+	int i=0;
+	while (targetTree[i].name[0]!='\0'){
+		printf("first compare %s\n",name);
+		printf("second compare %s\n",targetTree[i].name);
+		if  (strcmp(targetTree[i].name,name)==0){
+			return i;
+		}
+		i++;
+	}
+	return -1;
+}
+
