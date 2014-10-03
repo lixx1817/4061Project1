@@ -60,8 +60,6 @@ typedef struct target{
     lNode * depedency[10];
     bool indepedent; 
     enum STATUS {INELIGIBLE, READY, RUNNING, FINISHED} status ;
-    bool allCompleted; //indicate whether all of its child has completed the process 
-    bool depedency_filled; //especially design for tc6
 }target_t;
 
 target_t targetTree[1024];

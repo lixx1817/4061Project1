@@ -64,7 +64,6 @@ int parse(char * lpszFileName)
 						//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
 						nDepedencies++;
 					}
-					targetTree[nTargets].depedency_filled=true;
 				}
 				else if (CommandSkip==true) {
 					
@@ -132,32 +131,27 @@ int parse(char * lpszFileName)
     Dindex=0;
     nTargets=0;
     int checker=0;
+    bool go;
     while (targetTree[nTargets].name[0]!='\0'){
-		targetTree[nTargets].allCompleted=true; 
 		nTargets++; //update uTargets to fix the issue of tc 6 
 	}
-    //printf("there are %d targets needs to be compile in this file\n",nTargets);
-    while (checker<40){ //while not all of the progress has been complied
-		if(targetTree[i].status==INELIGIBLE){ //if not indepedent node, check its depedency 
-				printf("%d node is Ineligible: \n",i+1);
+    while (checker<60){ //while not all of the progress has been complied
+		if(targetTree[i].status==INELIGIBLE){
+				go=true;
 				while(targetTree[i].depedency[j]->name!=NULL){
-					printf("%s is the depedency",targetTree[i].depedency[j]->name); 
 					indexChecker=targetTree[i].depedency[j]->index; 
 					if (targetTree[indexChecker].status!=FINISHED){
-						targetTree[i].allCompleted=false;
-						printf("depedency %s is not finished yet\n",targetTree[i].depedency[j]->name);
-						
+						go=false;
 					}
 					j++;
 				}  
 				j=0;      
-				if (targetTree[i].allCompleted==true){
+				if (go==true){
 					targetTree[i].status=READY;
-					printf("%d node becomes ready \n",i+1);
 				}
 				
 			} 
-		else if(targetTree[i].status==READY ){ //not necessary to be two conditions but I'm being lazy for now 
+		else if(targetTree[i].status==READY ){ 
 			/* do work at here to start compiling shit 
 			 
 			printf("%d node is ready, start compiling",i);
