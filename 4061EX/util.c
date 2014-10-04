@@ -261,15 +261,15 @@ void build_depedency(target_t *targetTree){
 					j++;
 					
 				}
-				if(targetTree[i].status==INELIGIBLE){
-				printf("%d is Inegilible\n",i+1);}
+				//if(targetTree[i].status==INELIGIBLE){
+				//printf("%d is Inegilible\n",i+1);}
 			}
 			else{ 
 				targetTree[i].indepedent=true; //indicate that it is a leave node 
 				//nDepedentNode++;
 				targetTree[i].status=READY; //indicate that it is a leave node 
-				if(targetTree[i].status==READY){
-				printf("%d is ready\n",i+1);}
+				//if(targetTree[i].status==READY){
+				//printf("%d is ready\n",i+1);}
 				//printf("targetTree[%d]\n",i);
 				//printf("this is a indepedent node\n");
 				}
@@ -280,7 +280,7 @@ void build_depedency(target_t *targetTree){
 }
 
 void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
-	
+	int childPid;
 	int i=0;
     int j=0;
     int Dindex=0;
@@ -288,6 +288,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
 	int indexChecker=0;
 	int completedProgress=0;
 	int execount=0;
+	pid_t child_pid[15];
     bool go; //determine whether all node children have completed compiling 
     if(exe==false){
 		 while (targetTree[execount].name[0]!='\0'){
@@ -331,34 +332,39 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
 				
 			} 
 		else if(targetTree[i].status==READY ){ 
-			/* do work at here to start compiling shit 
-			 
-			printf("%d node is ready, start compiling",i);
-			targetTree[i].status==RUNNING;
 			
-			 do work at here to start compiling shit 
-			
-			
-			child_pid = fork();
-			if(child_pid == -1){
+			char ** myargv;
+			int status;
+			//completedProgress++;
+			//targetTree[i].status=FINISHED; //mark it as finished 
+			childPid=fork();
+			//child_pid[i] = fork();
+			//printf("pid is %d\n",childPid);
+			if(childPid == -1){
 				perror("ERROR: Failed to fork\n");
-				return -1;
+				exit(0);
 			}
-			if (child_pid == 0) {
+			else if (childPid == 0){
+				//targetTree[i].status==RUNNING;
 				char *Ecommand=targetTree[i].commandline;
-				if (execvp(Ecommand, argv) < 0) {     
+				int countn=makeargv(Ecommand, " \n", &myargv);
+				execvp(myargv[0], myargv);    
 				printf("*** ERROR: exec failed\n");
-				exit(1); 
-				}
-			*/
+				exit(0); 
+			}
+			else {                                  /* for the parent:      */
+				  while (wait(&status) != childPid)       /* wait for completion  */
+					   ;
+			 }
 			completedProgress++;
 			targetTree[i].status=FINISHED; //mark it as finished 
-			printf("node %d is executed\n", i+1);
-			}
+			//printf("node %d is executed\n", i+1);
+		}
 			
 			i++; 
+			//printf("Completedprogress is %d\n",completedProgress);
 			if(targetTree[i].name[0]=='\0'){
-				printf("reset\n");
+				//printf("reset\n");
 				i=0;
 			}
 	
