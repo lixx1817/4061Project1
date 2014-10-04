@@ -67,6 +67,7 @@ target_t targetTree[1024];
 int Search(char * name, target_t *targetTree );
 bool file_exists(const char * filename);
 void build_depedency(target_t *targetTree);
+void execute_tree(target_t *targetTree, char *main,bool st,bool exe);
 
 
 #endif

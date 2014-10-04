@@ -279,3 +279,90 @@ void build_depedency(target_t *targetTree){
 
 }
 
+void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
+	
+	int i=0;
+    int j=0;
+    int Dindex=0;
+	int  nTargets=0;
+	int indexChecker=0;
+	int completedProgress=0;
+	int execount=0;
+    bool go; //determine whether all node children have completed compiling 
+    if(exe==false){
+		 while (targetTree[execount].name[0]!='\0'){
+			if(targetTree[execount].commandline[0]!='\0'){
+			printf("following commland line would be run : %s \n", targetTree[execount].commandline);}
+			execount++; 
+		}
+		exit(0);
+	}
+	else printf("executing\n");
+    while (targetTree[nTargets].name[0]!='\0'){
+		//printf("%d has the following commland line : %s \n",nTargets, targetTree[nTargets].commandline);
+		nTargets++; //update uTargets to fix the issue of tc 6 
+	}
+	if(st==true){
+		Dindex=Search(main, targetTree);
+		if(targetTree[Dindex].status!=READY || Dindex==-1){
+			printf("cannot execute this target, either it is not a valid target or there is depedency require to be completed\n");
+			exit(0);
+		}
+		else {
+			printf("done!!!");
+			exit(0);
+		}
+		
+	}
+    while (completedProgress<nTargets){ //while not all of the progress has been complied
+		if(targetTree[i].status==INELIGIBLE){
+				go=true;
+				while(targetTree[i].depedency[j]->name!=NULL){
+					indexChecker=targetTree[i].depedency[j]->index; 
+					if (targetTree[indexChecker].status!=FINISHED){
+						go=false;
+					}
+					j++;
+				}  
+				j=0;      
+				if (go==true){
+					targetTree[i].status=READY;
+				}
+				
+			} 
+		else if(targetTree[i].status==READY ){ 
+			/* do work at here to start compiling shit 
+			 
+			printf("%d node is ready, start compiling",i);
+			targetTree[i].status==RUNNING;
+			
+			 do work at here to start compiling shit 
+			
+			
+			child_pid = fork();
+			if(child_pid == -1){
+				perror("ERROR: Failed to fork\n");
+				return -1;
+			}
+			if (child_pid == 0) {
+				char *Ecommand=targetTree[i].commandline;
+				if (execvp(Ecommand, argv) < 0) {     
+				printf("*** ERROR: exec failed\n");
+				exit(1); 
+				}
+			*/
+			completedProgress++;
+			targetTree[i].status=FINISHED; //mark it as finished 
+			printf("node %d is executed\n", i+1);
+			}
+			
+			i++; 
+			if(targetTree[i].name[0]=='\0'){
+				printf("reset\n");
+				i=0;
+			}
+	
+	
+}
+}
+

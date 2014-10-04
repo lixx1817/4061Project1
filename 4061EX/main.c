@@ -23,17 +23,9 @@ int parse(char * lpszFileName)
 	int nDepedencies=0;
 	char szLine[1024];
 	char * lpszLine="123";
-	int target_length;
-	int nDepedentNode=0;
 	bool MatchSkip;
 	bool BlankSkip;
 	bool CommandSkip;
-	int child_pid;
-	int i=0;
-	int j=0; 
-	int Dindex; 
-	int completedProgress=0; 
-    int indexChecker=0;
     bool nameTaken=false;
 
 	FILE * fp = file_open(lpszFileName);
@@ -57,7 +49,7 @@ int parse(char * lpszFileName)
 					if(targetTree[nTargets].name[0]=='\0'){
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 					}
-					else{nTargets++; nameTaken=true; nDepedencies=0; printf("special case\n");}
+					else{nTargets++; nameTaken=true; nDepedencies=0;}
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 					
 					//printf("targetTree[%d] is %s\n",nTargets,targetTree[nTargets].name);  	
@@ -80,7 +72,7 @@ int parse(char * lpszFileName)
 					//printf("sszLine is %s",szLine);
 					memmove(szLine, szLine+1, strlen(szLine));}
 					strcpy(targetTree[nTargets].commandline,szLine);
-					printf("%s\n",targetTree[nTargets].commandline);
+					//printf("%s\n",targetTree[nTargets].commandline);
 					if(nameTaken==false){
 					nTargets++;}
 					nDepedencies=0;
@@ -88,77 +80,8 @@ int parse(char * lpszFileName)
 		}
 	 
     }
-   build_depedency(targetTree);
-   
-    //third iteration begins, start running files//
-    i=0;
-    j=0;
-    Dindex=0;
-    nTargets=0;
-    bool go; //determine whether all node children have completed compiling 
-    while (targetTree[nTargets].name[0]!='\0'){
-		//printf("%d has the following commland line : %s \n",nTargets, targetTree[nTargets].commandline);
-		nTargets++; //update uTargets to fix the issue of tc 6 
-	}
-    while (completedProgress<nTargets){ //while not all of the progress has been complied
-		if(targetTree[i].status==INELIGIBLE){
-				go=true;
-				while(targetTree[i].depedency[j]->name!=NULL){
-					indexChecker=targetTree[i].depedency[j]->index; 
-					if (targetTree[indexChecker].status!=FINISHED){
-						go=false;
-					}
-					j++;
-				}  
-				j=0;      
-				if (go==true){
-					targetTree[i].status=READY;
-				}
-				
-			} 
-		else if(targetTree[i].status==READY ){ 
-			/* do work at here to start compiling shit 
-			 
-			printf("%d node is ready, start compiling",i);
-			targetTree[i].status==RUNNING;
-			
-			 do work at here to start compiling shit 
-			
-			
-			child_pid = fork();
-			if(child_pid == -1){
-				perror("ERROR: Failed to fork\n");
-				return -1;
-			}
-			if (child_pid == 0) {
-				char *Ecommand=targetTree[i].commandline;
-				if (execvp(Ecommand, argv) < 0) {     
-				printf("*** ERROR: exec failed\n");
-				exit(1); 
-				}
-			*/
-			completedProgress++;
-			targetTree[i].status=FINISHED; //mark it as finished 
-			printf("node %d is executed\n", i+1);
-			}
-			
-			i++; 
-			if(targetTree[i].name[0]=='\0'){
-				printf("reset\n");
-				i=0;
-			}
-		
-		
-	}
-    
-    
-    
-    
-    
-    
-    
-    
-    //
+
+
 
 		//You need to check below for parsing.
 		//Skip if blank or comment.
@@ -196,7 +119,7 @@ int main(int argc, char **argv)
 	extern char * optarg;
 	int ch;
 	char * format = "f:hnBm:"; //if there is semicolon after it, you need specify a file
-	char * mainTarget; 
+	//char * mainTarget; 
 	// Default makefile name will be Makefile
 	char szMakefile[64] = "Makefile";
 	char szTarget[64];
@@ -204,8 +127,9 @@ int main(int argc, char **argv)
 	bool redir=false;
 	bool execute=true;
 	bool timeStamp=true;
-	bool Specific_Target=false;
 	int log;
+	char * mainTarget;
+	bool Specific_Target=false;
 	
 
 	while((ch = getopt(argc, argv, format)) != -1) //obtain the character option 
@@ -269,8 +193,8 @@ int main(int argc, char **argv)
 	{
 		return EXIT_FAILURE;
 	}
-	target_t TreeArray[1024];
-	memcpy(targetTree, TreeArray, sizeof(targetTree));
+	   build_depedency(targetTree);
+		execute_tree(targetTree, mainTarget,Specific_Target,execute);
 
 	//after parsing the file, you'll want to check all dependencies (whether they are available targets or files)
 	//then execute all of the targets that were specified on the command line, along with their dependencies, etc.
