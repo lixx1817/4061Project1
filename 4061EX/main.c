@@ -39,8 +39,6 @@ int parse(char * lpszFileName)
 		nLine++;
 		MatchSkip=matchRegex(&lineComment, szLine) ; 
 		BlankSkip=matchRegex(&whiteSpace, szLine) ; 
-		//printf("%s\n", BlankSkip ? "true" : "false");
-		//printf("line number is %d\n",nLine); //determine where blankline is 
 		if(MatchSkip==false && BlankSkip==false){
 				nameTaken=false;
 				CommandSkip=matchRegex(&command, szLine);	
@@ -55,27 +53,20 @@ int parse(char * lpszFileName)
 						exit(0);
 					}
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
-					printf("targetTree[%d] is %s\n",nTargets,targetTree[nTargets].name);  	
 					lpszLine = strtok(NULL, " \n");
 					while (lpszLine != NULL) {
 						lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
 						strcpy(newDepedency->name,lpszLine);
 						targetTree[nTargets].depedency[nDepedencies]=newDepedency;
-						//printf("targetTree[%d].depedency[%d] is %s\n",nTargets,nDepedencies,targetTree[nTargets].depedency[nDepedencies]->name);  	
-						lpszLine = strtok(NULL, " \n");
-						//printf("lpszLine is now! %s\n",lpszLine);  		
-						//printf("lpszLine is now! %s\n",targetTree[nTargets].depedency[nDepedencies]);  		
+						lpszLine = strtok(NULL, " \n");		
 						nDepedencies++;
 					}
 				}
 				else if (CommandSkip==true) {
 					
 					if (szLine[0] == '\t') {
-					//printf("counter is %d",nTargets);
-					//printf("sszLine is %s",szLine);
 					memmove(szLine, szLine+1, strlen(szLine));}
 					strcpy(targetTree[nTargets].commandline,szLine);
-					//printf("%s\n",targetTree[nTargets].commandline);
 					if(nameTaken==false){
 					nTargets++;}
 					nDepedencies=0;
@@ -83,21 +74,6 @@ int parse(char * lpszFileName)
 		}
 	 
     }
-
-
-
-		//You need to check below for parsing.
-		//Skip if blank or comment.
-		//Remove leading whitespace.
-		//Skip if whitespace-only.
-		//Only single command is allowed.
-		//If you found any syntax error, stop parsing. 
-		//If lpszLine starts with '\t' it will be command else it will be target.
-		//It is possbile that target may not have a command as you can see from the example on project write-up. (target:all)
-		//You can use any data structure (array, linked list ...) as you want to build a graph
-	
-
-	//Close the makefile. 
 	fclose(fp);
 
 	return 0;
@@ -121,9 +97,7 @@ int main(int argc, char **argv)
 	extern int optind;
 	extern char * optarg;
 	int ch;
-	char * format = "f:hnBm:"; //if there is semicolon after it, you need specify a file
-	//char * mainTarget; 
-	// Default makefile name will be Makefile
+	char * format = "f:hnBm:"; 
 	char szMakefile[64] = "Makefile";
 	char szTarget[64];
 	char szLog[64];
@@ -161,13 +135,6 @@ int main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	// at this point, what is left in argv is the targets that were 
-	// specified on the command line. argc has the number of them.
-	// If getopt is still really confusing,
-	// try printing out what's in argv right here, then just running 
-	// with various command-line arguments.
-	 
-    //for command ./make4061, nothing left, ./make4061 123 left with 123..etc
 	
 	if(redir==true)
 	{

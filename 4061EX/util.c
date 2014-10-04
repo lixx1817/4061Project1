@@ -249,29 +249,19 @@ void build_depedency(target_t *targetTree){
 						}
 						else{ //for case such as make4061: main.c parse.c whereas these are existing files 
 							targetTree[i].indepedent=true; //indicate that it is a leave node 
-							//nDepedentNode++;
 							targetTree[i].status=READY; //indicate that it is a leave node 
 						}
 					}
 					else{
 						targetTree[i].depedency[j]->index=Dindex; 
 					}
-					//printf("targetTree[%d].depedency[%d]: The depedency name is %s \n",i,j,targetTree[i].depedency[j]->name);
-					//printf("targetTree[%d].depedency[%d]: The depedency matches %d in the array \n",i,j,targetTree[i].depedency[j]->index);
 					j++;
 					
 				}
-				//if(targetTree[i].status==INELIGIBLE){
-				//printf("%d is Inegilible\n",i+1);}
 			}
 			else{ 
 				targetTree[i].indepedent=true; //indicate that it is a leave node 
-				//nDepedentNode++;
 				targetTree[i].status=READY; //indicate that it is a leave node 
-				//if(targetTree[i].status==READY){
-				//printf("%d is ready\n",i+1);}
-				//printf("targetTree[%d]\n",i);
-				//printf("this is a indepedent node\n");
 				}
 				i++;
 				
@@ -298,9 +288,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
 		}
 		exit(0);
 	}
-	else printf("executing\n");
     while (targetTree[nTargets].name[0]!='\0'){
-		//printf("%d has the following commland line : %s \n",nTargets, targetTree[nTargets].commandline);
 		nTargets++; //update uTargets to fix the issue of tc 6 
 	}
 	if(st==true){
@@ -310,12 +298,23 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
 			exit(0);
 		}
 		else {
-			printf("done!!!");
-			exit(0);
+				char ** myargv;
+				char *Ecommand=targetTree[Dindex].commandline;
+				int countn=makeargv(Ecommand, " \n", &myargv);
+				execvp(myargv[0], myargv);    
+				printf("*** ERROR: exec failed\n");
+				exit(0); 
 		}
 		
 	}
     while (completedProgress<nTargets){ //while not all of the progress has been complied
+		char *Tcommand=targetTree[i].commandline;
+		if(strstr(Tcommand,"rm")!=NULL){
+			completedProgress++;
+			targetTree[i].status=FINISHED; //mark it as finished 
+			i++; 
+			continue;
+		}
 		if(targetTree[i].status==INELIGIBLE){
 				go=true;
 				while(targetTree[i].depedency[j]->name!=NULL){
@@ -332,20 +331,14 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
 				
 			} 
 		else if(targetTree[i].status==READY ){ 
-			
 			char ** myargv;
 			int status;
-			//completedProgress++;
-			//targetTree[i].status=FINISHED; //mark it as finished 
 			childPid=fork();
-			//child_pid[i] = fork();
-			//printf("pid is %d\n",childPid);
 			if(childPid == -1){
 				perror("ERROR: Failed to fork\n");
 				exit(0);
 			}
 			else if (childPid == 0){
-				//targetTree[i].status==RUNNING;
 				char *Ecommand=targetTree[i].commandline;
 				int countn=makeargv(Ecommand, " \n", &myargv);
 				execvp(myargv[0], myargv);    
@@ -358,13 +351,10 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
 			 }
 			completedProgress++;
 			targetTree[i].status=FINISHED; //mark it as finished 
-			//printf("node %d is executed\n", i+1);
 		}
 			
 			i++; 
-			//printf("Completedprogress is %d\n",completedProgress);
 			if(targetTree[i].name[0]=='\0'){
-				//printf("reset\n");
 				i=0;
 			}
 	
