@@ -147,8 +147,8 @@ int parse(char * lpszFileName)
     nTargets=0;
     bool go; //determine whether all node children have completed compiling 
     while (targetTree[nTargets].name[0]!='\0'){
+		//printf("%d has the following commland line : %s \n",nTargets, targetTree[nTargets].commandline);
 		nTargets++; //update uTargets to fix the issue of tc 6 
-		
 	}
     while (completedProgress<nTargets){ //while not all of the progress has been complied
 		if(targetTree[i].status==INELIGIBLE){
