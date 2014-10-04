@@ -59,15 +59,15 @@ typedef struct target{
 	bool targetExists;
     lNode * depedency[10];
     bool indepedent; 
-    enum STATUS {INELIGIBLE, READY, RUNNING, FINISHED} status ;
+    enum STATUS {INELIGIBLE, READY, NEW, FINISHED} status ;
 }target_t;
 
 target_t targetTree[1024];
 
 int Search(char * name, target_t *targetTree );
 bool file_exists(const char * filename);
-void build_depedency(target_t *targetTree);
-void execute_tree(target_t *targetTree, char *main,bool st,bool exe);
+void build_depedency(target_t *targetTree, bool Time);
+void execute_tree(target_t *targetTree, char *main,bool st,bool exe,bool TimeS);
 
 
 #endif

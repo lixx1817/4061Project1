@@ -231,7 +231,7 @@ int Search(char * name, target_t *targetTree ){
 	return -1;
 }
 
-void build_depedency(target_t *targetTree){
+void build_depedency(target_t *targetTree, bool Time){
 	int i=0; 
 	int j=0;
 	int Dindex;
@@ -248,8 +248,12 @@ void build_depedency(target_t *targetTree){
 							exit(0);
 						}
 						else{ //for case such as make4061: main.c parse.c whereas these are existing files 
+							if(Time==false){
 							targetTree[i].indepedent=true; //indicate that it is a leave node 
-							targetTree[i].status=READY; //indicate that it is a leave node 
+							targetTree[i].status=READY;} //indicate that it is a leave node 
+							else if(compare_modification_time(targetTree[i].depedency[j]->name, targetTree[i].name)!=2){
+								targetTree[i].status=NEW;
+							}
 						}
 					}
 					else{
@@ -269,7 +273,7 @@ void build_depedency(target_t *targetTree){
 
 }
 
-void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
+void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS){
 	int childPid;
 	int i=0;
     int j=0;
@@ -309,7 +313,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe){
 	}
     while (completedProgress<nTargets){ //while not all of the progress has been complied
 		char *Tcommand=targetTree[i].commandline;
-		if(strstr(Tcommand,"rm")!=NULL){
+		if(strstr(Tcommand,"rm")!=NULL || targetTree[i].status==NEW){
 			completedProgress++;
 			targetTree[i].status=FINISHED; //mark it as finished 
 			i++; 

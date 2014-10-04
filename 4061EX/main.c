@@ -120,6 +120,7 @@ int main(int argc, char **argv)
 				execute=false;
 				break;
 			case 'B':
+				timeStamp=false;
 				break;
 			case 'm':
 				redir = true;
@@ -163,8 +164,8 @@ int main(int argc, char **argv)
 	{
 		return EXIT_FAILURE;
 	}
-	   build_depedency(targetTree);
-		execute_tree(targetTree, mainTarget,Specific_Target,execute);
+	   build_depedency(targetTree , timeStamp);
+		execute_tree(targetTree, mainTarget,Specific_Target,execute,timeStamp);
 
 	//after parsing the file, you'll want to check all dependencies (whether they are available targets or files)
 	//then execute all of the targets that were specified on the command line, along with their dependencies, etc.
