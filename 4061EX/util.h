@@ -24,7 +24,7 @@
 #define FINISHED 3
 */
 #define MAX_LENGTH 1024
-#define MAX_DEPENDENCIES 10
+#define MAX_DEPENDENCIES ar10
 #define MAX_TARGETS 10
 
 // This stuff is for easy file reading
@@ -66,6 +66,7 @@ target_t targetTree[1024];
 
 int Search(char * name, target_t *targetTree );
 bool file_exists(const char * filename);
+void build_depedency(target_t *targetTree);
 
 
 #endif

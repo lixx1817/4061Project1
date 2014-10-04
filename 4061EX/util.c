@@ -200,45 +200,7 @@ bool matchRegex (regex_t *re, const char *text) {
     }
 }
 
-int consumeWhiteSpaceAndComments (regex_t *whiteSpace, 
-                                  regex_t *blockComment, 
-				  regex_t *lineComment,
-                                  const char *text) {
-    int numMatchedChars = 0 ;
-    int totalNumMatchedChars = 0 ;
-    int stillConsumingWhiteSpace ;
 
-    do {
-        stillConsumingWhiteSpace = 0 ;  // exit loop if not reset by a match
-
-        // Try to match white space
-        numMatchedChars = matchRegex (whiteSpace, text) ;
-        totalNumMatchedChars += numMatchedChars ;
-        if (numMatchedChars > 0) {
-            text = text + numMatchedChars ;
-            stillConsumingWhiteSpace = 1 ;
-        }
-
-        // Try to match block comments
-        numMatchedChars = matchRegex (blockComment, text) ;
-        totalNumMatchedChars += numMatchedChars ;
-        if (numMatchedChars > 0) {
-            text = text + numMatchedChars ;
-            stillConsumingWhiteSpace = 1 ;
-        }
-
-        // Try to match single-line comments
-        numMatchedChars = matchRegex (lineComment, text) ;
-        totalNumMatchedChars += numMatchedChars ;
-        if (numMatchedChars > 0) {
-            text = text + numMatchedChars ;
-            stillConsumingWhiteSpace = 1 ;
-        }
-    }
-    while ( stillConsumingWhiteSpace ) ;    
-
-    return totalNumMatchedChars ;
-}
 
 
 int testFn(const char *str)
@@ -267,5 +229,53 @@ int Search(char * name, target_t *targetTree ){
 		i++;
 	}
 	return -1;
+}
+
+void build_depedency(target_t *targetTree){
+	int i=0; 
+	int j=0;
+	int Dindex;
+	
+	while (targetTree[i].name[0]!='\0'){
+			j=0; 
+			targetTree[i].status=INELIGIBLE; //initialize the status as not ready for compile 
+			if (targetTree[i].depedency[0]!=NULL){  
+				while(targetTree[i].depedency[j]->name!=NULL){
+					Dindex=Search(targetTree[i].depedency[j]->name, targetTree);
+					if(Dindex==-1){
+						if(file_exists(targetTree[i].depedency[j]->name)==false){   //if cannot find file in tree, and if these depedencies doesn't exist as file
+							printf("syntax error,found depedency file that doesnt exist, compile stop\n"); //found syntax error 
+							exit(0);
+						}
+						else{ //for case such as make4061: main.c parse.c whereas these are existing files 
+							targetTree[i].indepedent=true; //indicate that it is a leave node 
+							//nDepedentNode++;
+							targetTree[i].status=READY; //indicate that it is a leave node 
+						}
+					}
+					else{
+						targetTree[i].depedency[j]->index=Dindex; 
+					}
+					//printf("targetTree[%d].depedency[%d]: The depedency name is %s \n",i,j,targetTree[i].depedency[j]->name);
+					//printf("targetTree[%d].depedency[%d]: The depedency matches %d in the array \n",i,j,targetTree[i].depedency[j]->index);
+					j++;
+					
+				}
+				if(targetTree[i].status==INELIGIBLE){
+				printf("%d is Inegilible\n",i+1);}
+			}
+			else{ 
+				targetTree[i].indepedent=true; //indicate that it is a leave node 
+				//nDepedentNode++;
+				targetTree[i].status=READY; //indicate that it is a leave node 
+				if(targetTree[i].status==READY){
+				printf("%d is ready\n",i+1);}
+				//printf("targetTree[%d]\n",i);
+				//printf("this is a indepedent node\n");
+				}
+				i++;
+				
+	}
+
 }
 
