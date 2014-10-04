@@ -2,7 +2,7 @@
 * login: cselabs login name (login used to submit)
 * date: 10/03/14
 * name: Hai Li, Hang Li, Zixiang Ma 
-* id: 4454480, id for second name, 4644999 */ 
+* id: 4454480, id for second name,4631724, id for third name, 4644999 */ 
 Purpose
 To create a simple make utility similar to make in Linux. It could parse a file and generate a graph using different data structure to hold the dependencies information, and execute given command.
 
