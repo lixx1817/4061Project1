@@ -57,7 +57,7 @@ int parse(char * lpszFileName)
 					if(targetTree[nTargets].name[0]=='\0'){
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 					}
-					else{nTargets++; nameTaken=true; nDepedencies=0;}
+					else{nTargets++; nameTaken=true; nDepedencies=0; printf("special case\n");}
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 					
 					//printf("targetTree[%d] is %s\n",nTargets,targetTree[nTargets].name);  	
@@ -76,9 +76,11 @@ int parse(char * lpszFileName)
 				else if (CommandSkip==true) {
 					
 					if (szLine[0] == '\t') {
+					//printf("counter is %d",nTargets);
+					//printf("sszLine is %s",szLine);
 					memmove(szLine, szLine+1, strlen(szLine));}
 					strcpy(targetTree[nTargets].commandline,szLine);
-					//printf("%s\n",targetTree[nTargets].commandline);
+					printf("%s\n",targetTree[nTargets].commandline);
 					if(nameTaken==false){
 					nTargets++;}
 					nDepedencies=0;
@@ -146,6 +148,7 @@ int parse(char * lpszFileName)
     bool go; //determine whether all node children have completed compiling 
     while (targetTree[nTargets].name[0]!='\0'){
 		nTargets++; //update uTargets to fix the issue of tc 6 
+		
 	}
     while (completedProgress<nTargets){ //while not all of the progress has been complied
 		if(targetTree[i].status==INELIGIBLE){
