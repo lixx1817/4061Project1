@@ -246,11 +246,16 @@ int main(int argc, char **argv)
 	extern char * optarg;
 	int ch;
 	char * format = "f:hnBm:"; //if there is semicolon after it, you need specify a file
-	
+	char * mainTarget; 
 	// Default makefile name will be Makefile
 	char szMakefile[64] = "Makefile";
 	char szTarget[64];
 	char szLog[64];
+	bool redir=false;
+	bool execute=true;
+	bool timeStamp=true;
+	bool Specific_Target=false;
+	int log;
 	
 
 	while((ch = getopt(argc, argv, format)) != -1) //obtain the character option 
@@ -261,10 +266,12 @@ int main(int argc, char **argv)
 				strcpy(szMakefile, strdup(optarg));
 				break;
 			case 'n':
+				execute=false;
 				break;
 			case 'B':
 				break;
 			case 'm':
+				redir = true;
 				strcpy(szLog, strdup(optarg));
 				break;
 			case 'h':
@@ -285,28 +292,35 @@ int main(int argc, char **argv)
 	 
     //for command ./make4061, nothing left, ./make4061 123 left with 123..etc
 	
-
+	if(redir==true)
+	{
+		log = open(szLog, O_CREAT|O_TRUNC|O_WRONLY, 0644);
+		dup2(log, 1);
+	}
 	if(argc > 1)
 	{
 		show_error_message(argv[0]);
 		return EXIT_FAILURE;
 	}
 
-	//You may start your program by setting the target that make4061 should build.
-	//if target is not set, set it to default (first target from makefile)
 	if(argc == 1)
 	{
+		mainTarget=argv[0];
+		Specific_Target=true;
 	}
 	else
 	{
+		Specific_Target=false;
 	}
 
-
+	
 	/* Parse graph file or die */
 	if((parse(szMakefile)) == -1) 
 	{
 		return EXIT_FAILURE;
 	}
+	target_t TreeArray[1024];
+	memcpy(targetTree, TreeArray, sizeof(targetTree));
 
 	//after parsing the file, you'll want to check all dependencies (whether they are available targets or files)
 	//then execute all of the targets that were specified on the command line, along with their dependencies, etc.
