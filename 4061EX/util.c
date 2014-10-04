@@ -231,7 +231,11 @@ int Search(char * name, target_t *targetTree ){
 	return -1;
 }
 
-void build_depedency(target_t *targetTree, bool Time){
+
+/* the following function builds the execute order based on files depedencies of each other, syntax check is done in this part 
+ of code by checking if the depedency is a valid file name or name of other depedency
+  */
+void build_depedency(target_t *targetTree, bool Time){	
 	int i=0; 
 	int j=0;
 	int Dindex;
@@ -240,19 +244,19 @@ void build_depedency(target_t *targetTree, bool Time){
 			j=0; 
 			targetTree[i].status=INELIGIBLE; //initialize the status as not ready for compile 
 			if (targetTree[i].depedency[0]!=NULL){  
-				while(targetTree[i].depedency[j]->name!=NULL){
+				while(targetTree[i].depedency[j]->name!=NULL){		//for each node, check its depedencies by searching the index of array
 					Dindex=Search(targetTree[i].depedency[j]->name, targetTree);
 					if(Dindex==-1){
 						if(file_exists(targetTree[i].depedency[j]->name)==false){   //if cannot find file in tree, and if these depedencies doesn't exist as file
 							printf("syntax error,found depedency file that doesnt exist, compile stop\n"); //found syntax error 
-							exit(0);
+							exit(0); //this part is for handling dependecies which name is a actual file name in the system
 						}
 						else{ //for case such as make4061: main.c parse.c whereas these are existing files 
 							if(Time==false){
 							targetTree[i].indepedent=true; //indicate that it is a leave node 
 							targetTree[i].status=READY;} //indicate that it is a leave node 
 							else if(compare_modification_time(targetTree[i].depedency[j]->name, targetTree[i].name)!=2){
-								targetTree[i].status=NEW;
+								targetTree[i].status=NEW;	//check timestamp, mark it as NEW for not executing it 
 							}
 						}
 					}
@@ -284,12 +288,12 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
 	int execount=0;
 	pid_t child_pid[15];
     bool go; //determine whether all node children have completed compiling 
-    if(exe==false){
+    if(exe==false){ 	//simply display all command that needs to be run 
 		 while (targetTree[execount].name[0]!='\0'){
-			if(targetTree[execount].commandline[0]!='\0'){
+			if(targetTree[execount].commandline[0]!='\0' || targetTree[execount].status!=NEW){
 			printf("following commland line would be run : %s \n", targetTree[execount].commandline);}
 			execount++; 
-		}
+		}		//command with same timestamp would not be displayed
 		exit(0);
 	}
     while (targetTree[nTargets].name[0]!='\0'){
@@ -300,7 +304,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
 		if(targetTree[Dindex].status!=READY || Dindex==-1){
 			printf("cannot execute this target, either it is not a valid target or there is depedency require to be completed\n");
 			exit(0);
-		}
+		}	//handling case for specific target cannot be built until all depedencies has been compiled
 		else {
 				char ** myargv;
 				char *Ecommand=targetTree[Dindex].commandline;
@@ -311,7 +315,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
 		}
 		
 	}
-    while (completedProgress<nTargets){ //while not all of the progress has been complied
+    while (completedProgress<nTargets){ //while not all of the progress has been complied, keep checking til all progress is over
 		char *Tcommand=targetTree[i].commandline;
 		if(strstr(Tcommand,"rm")!=NULL || targetTree[i].status==NEW){
 			completedProgress++;
@@ -319,7 +323,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
 			i++; 
 			continue;
 		}
-		if(targetTree[i].status==INELIGIBLE){
+		if(targetTree[i].status==INELIGIBLE){	//if the node is not ineligible, check if all depedencies have completed 
 				go=true;
 				while(targetTree[i].depedency[j]->name!=NULL){
 					indexChecker=targetTree[i].depedency[j]->index; 
@@ -330,7 +334,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
 				}  
 				j=0;      
 				if (go==true){
-					targetTree[i].status=READY;
+					targetTree[i].status=READY;		//if all finished, we can make this one ready 
 				}
 				
 			} 

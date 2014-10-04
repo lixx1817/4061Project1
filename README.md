@@ -17,3 +17,10 @@ How to use the program from the shell
 
 What the program does
 General algorithm starts with reading makefile line by line in the Parse function. Whitespace and comments will be neglected. Syntax will be checked and program will print out error message if coming across syntax error. Only command line and target line will be stored in an array temporarily, and a directed acyclic graph will be built based on dependencies relationship. Files will be complied based on the graph, and fork (), exec (), and wait () were used to execute command in specific order. 
+
+Special notice:
+Few Assumption has been made when writing this program:
+
+1. all rm command will NOT be executed unless called specifically, this is because rm command will sometimes contains the exe file it self
+and calling it will remove the exe file once it has been built
+2. Timestamp feature: when the feature is turned on, it will NOT display those commands that is not going to run. 

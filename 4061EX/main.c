@@ -1,3 +1,10 @@
+/* CSci4061 F2014 Assignment 1
+
+login: lixx1817 (login used to submit)
+date: 10/03/14
+name: Hai Li, Hang Li, Zixiang Ma
+id: 4454480, id for second name, 4644999 */
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -34,21 +41,21 @@ int parse(char * lpszFileName)
 	{
 		return -1;
 	}
-/* The following code is for building the structre array where each element contains a "node" */
+/* The following code is used for building the structre array where each element contains a "node" */
 	while(file_getline(szLine, fp) != NULL) {
 		nLine++;
 		MatchSkip=matchRegex(&lineComment, szLine) ; 
 		BlankSkip=matchRegex(&whiteSpace, szLine) ; 
-		if(MatchSkip==false && BlankSkip==false){
+		if(MatchSkip==false && BlankSkip==false){ //filter blank line and comment line
 				nameTaken=false;
 				CommandSkip=matchRegex(&command, szLine);	
-				if (CommandSkip==false){ 
+				if (CommandSkip==false){     //determine if it is a command or not, if not, tokenize 
 					lpszLine = strtok(szLine, " \n"); 
-					if(targetTree[nTargets].name[0]=='\0'){
+					if(targetTree[nTargets].name[0]=='\0'){		//check if same name is in array 
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 					}
-					else{nTargets++; nameTaken=true; nDepedencies=0;}
-					if(strstr(lpszLine,":")==NULL){
+					else{nTargets++; nameTaken=true; nDepedencies=0;}	
+					if(strstr(lpszLine,":")==NULL){ 		//target line syntax check 
 						printf("syntax error\n");
 						exit(0);
 					}
@@ -64,7 +71,7 @@ int parse(char * lpszFileName)
 				}
 				else if (CommandSkip==true) {
 					
-					if (szLine[0] == '\t') {
+					if (szLine[0] == '\t') {			//store command line into array
 					memmove(szLine, szLine+1, strlen(szLine));}
 					strcpy(targetTree[nTargets].commandline,szLine);
 					if(nameTaken==false){
@@ -101,7 +108,7 @@ int main(int argc, char **argv)
 	char szMakefile[64] = "Makefile";
 	char szTarget[64];
 	char szLog[64];
-	bool redir=false;
+	bool redir=false;	 //define boolean for checking opt and pass in function to meet different requirements 
 	bool execute=true;
 	bool timeStamp=true;
 	int log;
@@ -164,7 +171,7 @@ int main(int argc, char **argv)
 	{
 		return EXIT_FAILURE;
 	}
-	   build_depedency(targetTree , timeStamp);
+		build_depedency(targetTree , timeStamp);
 		execute_tree(targetTree, mainTarget,Specific_Target,execute,timeStamp);
 
 	//after parsing the file, you'll want to check all dependencies (whether they are available targets or files)
