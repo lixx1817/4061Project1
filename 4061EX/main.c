@@ -50,9 +50,12 @@ int parse(char * lpszFileName)
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
 					}
 					else{nTargets++; nameTaken=true; nDepedencies=0;}
+					if(strstr(lpszLine,":")==NULL){
+						printf("syntax error\n");
+						exit(0);
+					}
 					strncpy(targetTree[nTargets].name,lpszLine,strlen(lpszLine)-1);
-					
-					//printf("targetTree[%d] is %s\n",nTargets,targetTree[nTargets].name);  	
+					printf("targetTree[%d] is %s\n",nTargets,targetTree[nTargets].name);  	
 					lpszLine = strtok(NULL, " \n");
 					while (lpszLine != NULL) {
 						lNode* newDepedency = (lNode*) malloc(sizeof(lNode));
