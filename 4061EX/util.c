@@ -252,12 +252,8 @@ void build_depedency(target_t *targetTree, bool Time){
 							exit(0); //this part is for handling dependecies which name is a actual file name in the system
 						}
 						else{ //for case such as make4061: main.c parse.c whereas these are existing files 
-							if(Time==false){
 							targetTree[i].indepedent=true; //indicate that it is a leave node 
-							targetTree[i].status=READY;} //indicate that it is a leave node 
-							else if(compare_modification_time(targetTree[i].depedency[j]->name, targetTree[i].name)!=2){
-								targetTree[i].status=NEW;	//check timestamp, mark it as NEW for not executing it 
-							}
+							targetTree[i].status=READY;
 						}
 					}
 					else{
@@ -290,7 +286,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
     bool go; //determine whether all node children have completed compiling 
     if(exe==false){ 	//simply display all command that needs to be run 
 		 while (targetTree[execount].name[0]!='\0'){
-			if(targetTree[execount].commandline[0]!='\0' || targetTree[execount].status!=NEW){
+			if(targetTree[execount].commandline[0]!='\0'){
 			printf("following commland line would be run : %s \n", targetTree[execount].commandline);}
 			execount++; 
 		}		//command with same timestamp would not be displayed

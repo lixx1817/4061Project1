@@ -23,4 +23,4 @@ Few Assumption has been made when writing this program:
 
 1. all rm command will NOT be executed unless called specifically, this is because rm command will sometimes contains the exe file it self
 and calling it will remove the exe file once it has been built
-2. Timestamp feature: when the feature is turned on, it will NOT display those commands that is not going to run. 
+

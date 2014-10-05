@@ -3,7 +3,7 @@
 login: lixx1817 (login used to submit)
 date: 10/03/14
 name: Hai Li, Hang Li, Zixiang Ma
-id: 4454480, id for second name, 4644999 */
+id: 4454480, 4631724, 4644999 */
 
 #include <errno.h>
 #include <fcntl.h>
