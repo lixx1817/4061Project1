@@ -277,6 +277,7 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
 	int childPid;
 	int i=0;
     int j=0;
+    int k=0;
     int Dindex=0;
 	int  nTargets=0;
 	int indexChecker=0;
@@ -284,14 +285,26 @@ void execute_tree(target_t *targetTree, char *main,bool st, bool exe,bool timeS)
 	int execount=0;
 	pid_t child_pid[15];
     bool go; //determine whether all node children have completed compiling 
+    
+    if(timeS==true){
+		while (targetTree[k].name[0]!='\0'){
+		if(compare_modification_time(targetTree[k].name,targetTree[k].depedency[0]->name)==2 ){
+				completedProgress++;
+				targetTree[k].status=FINISHED;
+			}
+		k++; 
+		}
+	}
+	
     if(exe==false){ 	//simply display all command that needs to be run 
 		 while (targetTree[execount].name[0]!='\0'){
-			if(targetTree[execount].commandline[0]!='\0'){
+			if(targetTree[execount].commandline[0]!='\0'|| targetTree[execount].status!=FINISHED){
 			printf("following commland line would be run : %s \n", targetTree[execount].commandline);}
 			execount++; 
 		}		//command with same timestamp would not be displayed
 		exit(0);
 	}
+
     while (targetTree[nTargets].name[0]!='\0'){
 		nTargets++; //update uTargets to fix the issue of tc 6 
 	}
